@@ -271,7 +271,7 @@
     </div>
 
     <script>
-        // EMBEDDED DATA - Newest creators FIRST! Now with backup images
+        // EMBEDDED DATA - Newest creators FIRST! Now with FIXED backup images
         const creatorsData = {
             "leftColumn": [
                 {
@@ -565,47 +565,41 @@
             setupImageBackups();
         }
         
-        // Create HTML for a creator card (with clickable image and backup system)
+        // Create HTML for a creator card (FIXED FLICKERING!)
         function createCreatorCard(creator) {
             return `
                 <div class="creator-card">
-                    <div class="image-container" onclick="handleAccess('${creator.contentUrl}', '${creator.name}', '${creator.linkvertiseUrl}', event)">
+                    <div class="image-container" onclick="openLinkvertise('${creator.linkvertiseUrl}')">
                         <img src="${creator.imageUrl}" alt="${creator.name}" class="creator-image" 
                              data-backup-1="${creator.backupImages[0] || ''}"
                              data-backup-2="${creator.backupImages[1] || ''}"
                              data-backup-3="${creator.backupImages[2] || ''}"
                              data-creator="${creator.name}"
                              data-current-backup="0"
+                             data-backup-locked="false"
                              onerror="handleImageError(this)">
                         <div class="image-status" id="status-${creator.name.replace(/\s+/g, '-')}">✓</div>
                     </div>
                     <h3 class="creator-name">${creator.name}</h3>
-                    <a href="${creator.linkvertiseUrl}" class="access-button" target="_blank" onclick="handleAccess('${creator.contentUrl}', '${creator.name}', '${creator.linkvertiseUrl}', event)">🔒 Access Content</a>
+                    <a href="${creator.linkvertiseUrl}" class="access-button" target="_blank" onclick="openLinkvertise('${creator.linkvertiseUrl}')">🔒 Access Content</a>
                 </div>
             `;
         }
         
-        // Setup backup image system
+        // SETUP IMAGE BACKUP SYSTEM - FIXED FLICKERING
         function setupImageBackups() {
             const images = document.querySelectorAll('.creator-image');
             images.forEach(img => {
                 img.dataset.currentBackup = '0';
-                img.dataset.triedBackup = 'false';
+                img.dataset.backupLocked = 'false';
             });
         }
         
-        // Handle image errors with automatic backup system
+        // HANDLE IMAGE ERRORS - NO MORE FLICKERING!
         function handleImageError(img) {
-            // Only try backup if we haven't already
-            if (img.dataset.triedBackup === 'true') {
-                // Use final fallback
-                const creatorName = img.dataset.creator;
-                const statusElement = document.getElementById(`status-${creatorName.replace(/\s+/g, '-')}`);
-                if (statusElement) {
-                    statusElement.textContent = '⚠️';
-                    statusElement.className = 'image-status fallback';
-                }
-                img.src = `https://via.placeholder.com/400x400/1e1e2e/9ca3af?text=${encodeURIComponent(creatorName)}`;
+            // CHECK IF BACKUP SYSTEM IS LOCKED - PREVENT FLICKERING
+            if (img.dataset.backupLocked === 'true') {
+                console.log('🔒 Backup system locked for', img.dataset.creator, '- preventing flicker');
                 return;
             }
             
@@ -616,77 +610,57 @@
             const creatorName = img.dataset.creator;
             const statusElement = document.getElementById(`status-${creatorName.replace(/\s+/g, '-')}`);
             
-            console.log(`🖼️ Primary image failed for ${creatorName}, trying backup...`);
+            console.log(`🖼️ Image failed for ${creatorName}, trying backup ${currentBackup + 1}...`);
             
-            // Try first backup
-            if (currentBackup === 0 && backup1) {
-                img.src = backup1;
+            // TRY FIRST BACKUP
+            if (currentBackup === 0 && backup1 && backup1 !== '') {
                 img.dataset.currentBackup = '1';
+                img.src = backup1;
                 if (statusElement) {
                     statusElement.textContent = '🔄';
                     statusElement.className = 'image-status backup';
                 }
             }
-            // Try second backup
-            else if (currentBackup === 1 && backup2) {
-                img.src = backup2;
+            // TRY SECOND BACKUP
+            else if (currentBackup === 1 && backup2 && backup2 !== '') {
                 img.dataset.currentBackup = '2';
+                img.src = backup2;
                 if (statusElement) {
                     statusElement.textContent = '🔄';
                     statusElement.className = 'image-status backup';
                 }
             }
-            // Try third backup
-            else if (currentBackup === 2 && backup3) {
-                img.src = backup3;
+            // TRY THIRD BACKUP
+            else if (currentBackup === 2 && backup3 && backup3 !== '') {
                 img.dataset.currentBackup = '3';
+                img.src = backup3;
                 if (statusElement) {
                     statusElement.textContent = '🔄';
                     statusElement.className = 'image-status backup';
                 }
             }
-            // No more backups, use placeholder
+            // NO MORE BACKUPS - LOCK AND USE PLACEHOLDER
             else {
-                img.dataset.triedBackup = 'true';
+                img.dataset.backupLocked = 'true';
+                img.dataset.currentBackup = '99';
                 if (statusElement) {
                     statusElement.textContent = '⚠️';
                     statusElement.className = 'image-status fallback';
                 }
                 img.src = `https://via.placeholder.com/400x400/1e1e2e/9ca3af?text=${encodeURIComponent(creatorName)}`;
-                console.log(`❌ All images failed for ${creatorName}, using placeholder`);
+                console.log(`❌ All images failed for ${creatorName}, using placeholder (LOCKED)`);
             }
         }
         
-        // Handle access button clicks (WORKS FOR BOTH IMAGE AND BUTTON!)
-        function handleAccess(contentUrl, creatorName, linkvertiseUrl, event) {
-            if (event) {
-                event.preventDefault();
-            }
-            
-            console.log(`🔗 Accessing ${creatorName}'s content via Linkvertise...`);
-            
-            // Show loading state for button if clicked
-            if (event && event.target.classList.contains('access-button')) {
-                const button = event.target;
-                const originalText = button.textContent;
-                button.textContent = '🔄 Loading...';
-                button.classList.add('loading');
-                
-                setTimeout(() => {
-                    button.textContent = originalText;
-                    button.classList.remove('loading');
-                }, 2000);
-            }
-            
-            // ALWAYS go through Linkvertise (same for image and button clicks!)
-            setTimeout(() => {
-                window.open(linkvertiseUrl, '_blank');
-            }, 500);
+        // SIMPLIFIED LINKVERTISE HANDLER - WORKS FOR BOTH IMAGE AND BUTTON!
+        function openLinkvertise(linkvertiseUrl) {
+            console.log('🔗 Opening Linkvertise:', linkvertiseUrl);
+            window.open(linkvertiseUrl, '_blank');
         }
         
-        // Load creators when page loads
+        // LOAD CREATORS WHEN PAGE LOADS
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('🚀 Mochi Website Starting with Clickable Images & Backup System...');
+            console.log('🚀 Mochi Website Starting with ANTI-FLICKERING Backup System...');
             console.log('📊 Total creators:', creatorsData.leftColumn.length + creatorsData.rightColumn.length);
             displayCreators();
         });
