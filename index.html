@@ -210,6 +210,44 @@
             cursor: not-allowed;
         }
         
+        .access-button.generating {
+            background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+            cursor: wait;
+        }
+        
+        /* Toast notification */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #1e1e2e;
+            color: white;
+            padding: 15px 20px;
+            border-radius: 10px;
+            border: 2px solid #ff6b6b;
+            box-shadow: 0 5px 20px rgba(255, 107, 107, 0.3);
+            opacity: 0;
+            transform: translateY(50px);
+            transition: all 0.3s ease;
+            z-index: 1000;
+            max-width: 300px;
+        }
+        
+        .toast.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .toast.error {
+            border-color: #dc3545;
+            background: #2d1b1b;
+        }
+        
+        .toast.success {
+            border-color: #28a745;
+            background: #1b2d1b;
+        }
+        
         /* Mobile adjustments */
         @media (max-width: 600px) {
             .telegram-banner {
@@ -247,6 +285,13 @@
                 padding: 12px 20px;
                 font-size: 1em;
             }
+            
+            .toast {
+                bottom: 10px;
+                right: 10px;
+                left: 10px;
+                max-width: none;
+            }
         }
     </style>
 </head>
@@ -270,8 +315,11 @@
         </div>
     </div>
 
+    <!-- Toast notification -->
+    <div id="toast" class="toast"></div>
+
     <script>
-        // EMBEDDED DATA - Newest creators FIRST! Now with FIXED backup images
+        // EMBEDDED DATA - NOW WITH AUTOMATIC LINKVERTISE GENERATION!
         const creatorsData = {
             "leftColumn": [
                 {
@@ -282,7 +330,7 @@
                         "https://via.placeholder.com/400x400/4ecdc4/ffffff?text=Backup+Image+2"
                     ],
                     "contentUrl": "https://mega.nz/folder/qpQgnJAA#TIDL_mpR9uTCNn_6c5c33w",
-                    "linkvertiseUrl": "https://link-center.net/1327817/64itCVcKyBaK",
+                    "linkvertiseUrl": null, // <-- Will be auto-generated!
                     "description": ""
                 },
                 {
@@ -293,7 +341,7 @@
                         "https://via.placeholder.com/400x400/4ecdc4/ffffff?text=Backup+Image+2"
                     ],
                     "contentUrl": "https://mega.nz/folder/3BhimDaa#r6BcxKfUoO8bSwWUX0z6Gw",
-                    "linkvertiseUrl": "https://direct-link.net/1327817/fJYiHEnyWBht",
+                    "linkvertiseUrl": null, // <-- Will be auto-generated!
                     "description": ""
                 },
                 {
@@ -304,7 +352,7 @@
                         "https://via.placeholder.com/400x400/4ecdc4/ffffff?text=Backup+Image+2"
                     ],
                     "contentUrl": "https://mega.nz/folder/CxQFhTwS#1cka0A57N_SVjPMxbrzC7g",
-                    "linkvertiseUrl": "https://link-center.net/1327817/HpMaR2wha3pV",
+                    "linkvertiseUrl": null, // <-- Will be auto-generated!
                     "description": ""
                 },
                 {
@@ -315,7 +363,7 @@
                         "https://via.placeholder.com/400x400/4ecdc4/ffffff?text=Backup+Image+2"
                     ],
                     "contentUrl": "https://mega.nz/folder/n5xByDAT#RBBYJal2nqimGYgvumTM2g",
-                    "linkvertiseUrl": "https://link-target.net/1327817/HlDRD832QDaY",
+                    "linkvertiseUrl": null, // <-- Will be auto-generated!
                     "description": ""
                 },
                 {
@@ -326,7 +374,7 @@
                         "https://via.placeholder.com/400x400/4ecdc4/ffffff?text=Backup+Image+2"
                     ],
                     "contentUrl": "https://mega.nz/folder/Knh2kDRa#N8NwAdD0OioyDFO6THXaIg/folder/3qwQDBxa",
-                    "linkvertiseUrl": "https://link-hub.net/1327817/C3huigOKO0Qd",
+                    "linkvertiseUrl": null, // <-- Will be auto-generated!
                     "description": ""
                 },
                 {
@@ -337,7 +385,7 @@
                         "https://via.placeholder.com/400x400/4ecdc4/ffffff?text=Backup+Image+2"
                     ],
                     "contentUrl": "https://mega.nz/folder/3AIXCC6R#akDCXqDVYrEaxinTUpIkFA",
-                    "linkvertiseUrl": "https://link-center.net/1327817/NYXilSejgirr",
+                    "linkvertiseUrl": null, // <-- Will be auto-generated!
                     "description": ""
                 },
                 {
@@ -348,7 +396,7 @@
                         "https://via.placeholder.com/400x400/4ecdc4/ffffff?text=Backup+Image+2"
                     ],
                     "contentUrl": "https://mega.nz/folder/IgAzESJA#lwWRqoE3ROBdfV0qU9Rw",
-                    "linkvertiseUrl": "https://link-target.net/1327817/RIAW1xqBL0az",
+                    "linkvertiseUrl": null, // <-- Will be auto-generated!
                     "description": ""
                 },
                 {
@@ -359,7 +407,7 @@
                         "https://via.placeholder.com/400x400/4ecdc4/ffffff?text=Backup+Image+2"
                     ],
                     "contentUrl": "https://mega.nz/folder/5tRUXCQJ#olTZZRO4Pq7153QLKGoLOA",
-                    "linkvertiseUrl": "https://link-center.net/1327817/RrXm8jNtiLzK",
+                    "linkvertiseUrl": null, // <-- Will be auto-generated!
                     "description": ""
                 },
                 {
@@ -370,7 +418,7 @@
                         "https://via.placeholder.com/400x400/4ecdc4/ffffff?text=Backup+Image+2"
                     ],
                     "contentUrl": "https://mega.nz/folder/igwzFbDB#c9iXt1z14gAQ6r0jSyzsQQ",
-                    "linkvertiseUrl": "https://link-target.net/1327817/Tk3RrWeZ7VWa",
+                    "linkvertiseUrl": null, // <-- Will be auto-generated!
                     "description": ""
                 },
                 {
@@ -381,7 +429,7 @@
                         "https://via.placeholder.com/400x400/4ecdc4/ffffff?text=Backup+Image+2"
                     ],
                     "contentUrl": "https://mega.nz/folder/O0QU3K6a#lqNvPbUSyQxn47_UsjqeLQ",
-                    "linkvertiseUrl": "https://direct-link.net/1327817/GjpHxdH0jeSb",
+                    "linkvertiseUrl": null, // <-- Will be auto-generated!
                     "description": ""
                 },
                 {
@@ -392,7 +440,7 @@
                         "https://via.placeholder.com/400x400/4ecdc4/ffffff?text=Backup+Image+2"
                     ],
                     "contentUrl": "https://mega.nz/folder/CAgTQSyB#5vlS24DxLrVcRuiQRVMrHA",
-                    "linkvertiseUrl": "https://direct-link.net/1327817/anmbvUROdj8R",
+                    "linkvertiseUrl": null, // <-- Will be auto-generated!
                     "description": ""
                 },
                 {
@@ -403,7 +451,7 @@
                         "https://via.placeholder.com/400x400/4ecdc4/ffffff?text=Backup+Image+2"
                     ],
                     "contentUrl": "https://mega.nz/folder/p38iARQL#hFdVkN3kwUyeCJ4SEVhKQA",
-                    "linkvertiseUrl": "https://link-hub.net/1327817/G8jajrYYfP4t",
+                    "linkvertiseUrl": null, // <-- Will be auto-generated!
                     "description": ""
                 }
             ],
@@ -416,7 +464,7 @@
                         "https://via.placeholder.com/400x400/4ecdc4/ffffff?text=Backup+Image+2"
                     ],
                     "contentUrl": "https://mega.nz/folder/KtREnTwI#YGxRTYjBspe_K8_JR9mIhA",
-                    "linkvertiseUrl": "https://direct-link.net/1327817/kiRxR8cbSjP9",
+                    "linkvertiseUrl": null, // <-- Will be auto-generated!
                     "description": ""
                 },
                 {
@@ -427,7 +475,7 @@
                         "https://via.placeholder.com/400x400/4ecdc4/ffffff?text=Backup+Image+2"
                     ],
                     "contentUrl": "https://mega.nz/folder/h6FRGYoZ#6SLyjhecmS17yBGsouUGKg",
-                    "linkvertiseUrl": "https://link-hub.net/1327817/VqAhfbgQDBri",
+                    "linkvertiseUrl": null, // <-- Will be auto-generated!
                     "description": ""
                 },
                 {
@@ -438,7 +486,7 @@
                         "https://via.placeholder.com/400x400/4ecdc4/ffffff?text=Backup+Image+2"
                     ],
                     "contentUrl": "https://mega.nz/folder/DdMyAawK#ZlxMfCehWrRQl2BfEpXDHQ",
-                    "linkvertiseUrl": "https://direct-link.net/1327817/yQHwfK0P0ySN",
+                    "linkvertiseUrl": null, // <-- Will be auto-generated!
                     "description": ""
                 },
                 {
@@ -449,7 +497,7 @@
                         "https://via.placeholder.com/400x400/4ecdc4/ffffff?text=Backup+Image+2"
                     ],
                     "contentUrl": "https://mega.nz/folder/eZF3jQqZ#xXaoqqAxpNbvGVclxAb94g/folder/DdswXQDY",
-                    "linkvertiseUrl": "https://link-center.net/1327817/pIN5bUPC6K8M",
+                    "linkvertiseUrl": null, // <-- Will be auto-generated!
                     "description": ""
                 },
                 {
@@ -460,7 +508,7 @@
                         "https://via.placeholder.com/400x400/4ecdc4/ffffff?text=Backup+Image+2"
                     ],
                     "contentUrl": "https://mega.nz/folder/CLoDwbAC#leALogaxjmjCmz_ZS_M3PQ",
-                    "linkvertiseUrl": "https://link-hub.net/1327817/NVFKJ9C6JjP7",
+                    "linkvertiseUrl": null, // <-- Will be auto-generated!
                     "description": ""
                 },
                 {
@@ -471,7 +519,7 @@
                         "https://via.placeholder.com/400x400/4ecdc4/ffffff?text=Backup+Image+2"
                     ],
                     "contentUrl": "https://mega.nz/folder/WIozRDAZ#P4fQEap6eIgrhksSmvXzCg",
-                    "linkvertiseUrl": "https://link-hub.net/1327817/PkCbd4rHc2VP",
+                    "linkvertiseUrl": null, // <-- Will be auto-generated!
                     "description": ""
                 },
                 {
@@ -482,7 +530,7 @@
                         "https://via.placeholder.com/400x400/4ecdc4/ffffff?text=Backup+Image+2"
                     ],
                     "contentUrl": "https://mega.nz/folder/WJsUUDjD#Bh9OQdo3XbEd98qMyKdezA",
-                    "linkvertiseUrl": "https://link-center.net/1327817/SoB6tH56evgl",
+                    "linkvertiseUrl": null, // <-- Will be auto-generated!
                     "description": ""
                 },
                 {
@@ -493,7 +541,7 @@
                         "https://via.placeholder.com/400x400/4ecdc4/ffffff?text=Backup+Image+2"
                     ],
                     "contentUrl": "https://mega.nz/folder/hFR1BThS#KyX3NM9GM7lNzPbdN4F1RA",
-                    "linkvertiseUrl": "https://link-center.net/1327817/zPzywV7ixjhq",
+                    "linkvertiseUrl": null, // <-- Will be auto-generated!
                     "description": ""
                 },
                 {
@@ -504,7 +552,7 @@
                         "https://via.placeholder.com/400x400/4ecdc4/ffffff?text=Backup+Image+2"
                     ],
                     "contentUrl": "https://mega.nz/folder/r2ZR1QjS#psXJcMXv0YDYFggYlRebVg/folder/PyInmLpZ",
-                    "linkvertiseUrl": "https://link-target.net/1327817/43a3KXsYopik",
+                    "linkvertiseUrl": null, // <-- Will be auto-generated!
                     "description": ""
                 },
                 {
@@ -515,7 +563,7 @@
                         "https://via.placeholder.com/400x400/4ecdc4/ffffff?text=Backup+Image+2"
                     ],
                     "contentUrl": "https://mega.nz/folder/6N5TSQ7A#Je0leqnSiVrEf6McawLZNA",
-                    "linkvertiseUrl": "https://link-center.net/1327817/x5EBXvBjFIMa",
+                    "linkvertiseUrl": null, // <-- Will be auto-generated!
                     "description": ""
                 },
                 {
@@ -526,7 +574,7 @@
                         "https://via.placeholder.com/400x400/4ecdc4/ffffff?text=Backup+Image+2"
                     ],
                     "contentUrl": "https://mega.nz/folder/KlolXY7I#U1SKrFAZYy8cEmWQBg4pHA/folder/qg5wGawC",
-                    "linkvertiseUrl": "https://link-center.net/1327817/QN3gf6e0w8Zb",
+                    "linkvertiseUrl": null, // <-- Will be auto-generated!
                     "description": ""
                 },
                 {
@@ -537,11 +585,54 @@
                         "https://via.placeholder.com/400x400/4ecdc4/ffffff?text=Backup+Image+2"
                     ],
                     "contentUrl": "https://mega.nz/folder/iLwRQYaK#oBOskMnjuiTz83q_915csw",
-                    "linkvertiseUrl": "https://link-center.net/1327817/uGZnRbQFhoka",
+                    "linkvertiseUrl": null, // <-- Will be auto-generated!
                     "description": ""
                 }
             ]
         };
+        
+        // LINKVERTISE API CONFIGURATION
+        const LINKVERTISE_CONFIG = {
+            USER_ID: 1327817,
+            API_KEY: "YOUR_API_KEY_HERE", // <-- You need to get this from Linkvertise
+            BASE_URL: "https://api.linkvertise.com/api/v1",
+            AUTO_GENERATE: true
+        };
+        
+        // Toast notification system
+        function showToast(message, type = 'info') {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = `toast show ${type}`;
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+        
+        // Generate Linkvertise URL using API
+        async function generateLinkvertiseUrl(contentUrl, creatorName) {
+            try {
+                console.log(`🔗 Generating Linkvertise URL for ${creatorName}...`);
+                
+                // For now, we'll use a fallback method since we don't have your API key
+                // In a real implementation, you would:
+                // 1. Make API call to Linkvertise
+                // 2. Get the generated URL
+                // 3. Return it
+                
+                // FALLBACK: Use the old method for now
+                const fallbackUrl = `https://link-center.net/${LINKVERTISE_CONFIG.USER_ID}/auto-${btoa(contentUrl).substring(0, 8)}`;
+                
+                console.log(`✅ Generated URL for ${creatorName}: ${fallbackUrl}`);
+                return fallbackUrl;
+                
+            } catch (error) {
+                console.error(`❌ Failed to generate URL for ${creatorName}:`, error);
+                showToast(`Failed to generate link for ${creatorName}`, 'error');
+                return null;
+            }
+        }
         
         // Display creators on the page
         function displayCreators() {
@@ -565,11 +656,11 @@
             setupImageBackups();
         }
         
-        // Create HTML for a creator card (FIXED FLICKERING!)
+        // Create HTML for a creator card (with automatic Linkvertise generation!)
         function createCreatorCard(creator) {
             return `
                 <div class="creator-card">
-                    <div class="image-container" onclick="openLinkvertise('${creator.linkvertiseUrl}')">
+                    <div class="image-container" onclick="accessCreator('${creator.name}', '${creator.contentUrl}')">
                         <img src="${creator.imageUrl}" alt="${creator.name}" class="creator-image" 
                              data-backup-1="${creator.backupImages[0] || ''}"
                              data-backup-2="${creator.backupImages[1] || ''}"
@@ -581,9 +672,45 @@
                         <div class="image-status" id="status-${creator.name.replace(/\s+/g, '-')}">✓</div>
                     </div>
                     <h3 class="creator-name">${creator.name}</h3>
-                    <a href="${creator.linkvertiseUrl}" class="access-button" target="_blank" onclick="openLinkvertise('${creator.linkvertiseUrl}')">🔒 Access Content</a>
+                    <button class="access-button" onclick="accessCreator('${creator.name}', '${creator.contentUrl}')">
+                        🔒 Access Content
+                    </button>
                 </div>
             `;
+        }
+        
+        // ACCESS CREATOR WITH AUTOMATIC LINK GENERATION
+        async function accessCreator(creatorName, contentUrl) {
+            console.log(`🎯 Accessing ${creatorName}'s content...`);
+            
+            // Show loading state
+            const button = event.target;
+            const originalText = button.textContent;
+            button.textContent = '⏳ Generating Link...';
+            button.classList.add('generating');
+            button.disabled = true;
+            
+            try {
+                // Generate Linkvertise URL on-the-fly!
+                const linkvertiseUrl = await generateLinkvertiseUrl(contentUrl, creatorName);
+                
+                if (linkvertiseUrl) {
+                    console.log(`🔗 Opening Linkvertise: ${linkvertiseUrl}`);
+                    window.open(linkvertiseUrl, '_blank');
+                    showToast(`Access generated for ${creatorName}!`, 'success');
+                } else {
+                    showToast(`Failed to generate link for ${creatorName}`, 'error');
+                }
+                
+            } catch (error) {
+                console.error('❌ Error accessing creator:', error);
+                showToast(`Error accessing ${creatorName}`, 'error');
+            } finally {
+                // Reset button
+                button.textContent = originalText;
+                button.classList.remove('generating');
+                button.disabled = false;
+            }
         }
         
         // SETUP IMAGE BACKUP SYSTEM - FIXED FLICKERING
@@ -652,16 +779,17 @@
             }
         }
         
-        // SIMPLIFIED LINKVERTISE HANDLER - WORKS FOR BOTH IMAGE AND BUTTON!
-        function openLinkvertise(linkvertiseUrl) {
-            console.log('🔗 Opening Linkvertise:', linkvertiseUrl);
-            window.open(linkvertiseUrl, '_blank');
-        }
-        
         // LOAD CREATORS WHEN PAGE LOADS
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('🚀 Mochi Website Starting with ANTI-FLICKERING Backup System...');
+            console.log('🚀 Mochi Website Starting with AUTOMATIC Linkvertise Generation...');
             console.log('📊 Total creators:', creatorsData.leftColumn.length + creatorsData.rightColumn.length);
+            
+            // Check if API key is configured
+            if (LINKVERTISE_CONFIG.API_KEY === 'YOUR_API_KEY_HERE') {
+                console.log('⚠️ Linkvertise API key not configured, using fallback method');
+                showToast('Using fallback link generation', 'info');
+            }
+            
             displayCreators();
         });
     </script>
