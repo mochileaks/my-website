@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Mochi's Exclusive Content</title>
+    <style>
+        body {
+            background: #0a0e27;
+            color: #e4e4e7;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .header h1 {
+            color: #ff6b6b;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #ff6b6b, #4ecdc4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        /* MINIMAL Telegram Banner */
+        .telegram-banner {
+            background: linear-gradient(135deg, #0088cc, #0055a4);
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            text-align: center;
+            border: 1px solid #0055a4;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            transition: all 0.3s ease;
+        }
+        
+        .telegram-banner:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 136, 204, 0.3);
+        }
+        
+        .telegram-icon {
+            font-size: 1.5em;
+            color: white;
+        }
+        
+        .telegram-text {
+            color: white;
+            font-size: 1.1em;
+            font-weight: 500;
+        }
+        
+        .telegram-button {
+            background: white;
+            color: #0088cc;
+            padding: 8px 20px;
+            border-radius: 20px;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 0.95em;
+            transition: all 0.3s ease;
+            border: 2px solid white;
+            white-space: nowrap;
+        }
+        
+        .telegram-button:hover {
+            transform: scale(1.05);
+            background: #f0f8ff;
+        }
+        
+        /* Responsive grid */
+        .creator-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+        
+        @media (min-width: 700px) and (max-width: 1100px) {
+            .creator-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        @media (min-width: 1100px) {
+            .creator-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+        
+        .creator-card {
+            background: #1e1e2e;
+            padding: 20px;
+            border-radius: 15px;
+            border: 2px solid #2a2a3e;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .creator-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #ff6b6b, #4ecdc4);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+        
+        .creator-card:hover::before {
+            transform: scaleX(1);
+        }
+        
+        .creator-card:hover {
+            border-color: #ff6b6b;
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(255, 107, 107, 0.2);
+        }
+        
+        .image-container {
+            width: 100%;
+            position: relative;
+            padding-bottom: 100%;
+            margin-bottom: 15px;
+            overflow: hidden;
+            border-radius: 10px;
+            cursor: pointer;
+        }
+        
+        .creator-image {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: all 0.3s ease;
+        }
+        
+        .creator-image:hover {
+            transform: scale(1.05);
+        }
+        
+        .image-status {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.7em;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .image-container:hover .image-status {
+            opacity: 1;
+        }
+        
+        .image-status.backup {
+            background: rgba(255, 193, 7, 0.7);
+        }
+        
+        .image-status.fallback {
+            background: rgba(220, 53, 69, 0.7);
+        }
+        
+        .creator-name {
+            font-size: 1.6em;
+            color: #f4f4f5;
+            margin-bottom: 15px;
+            text-align: center;
+            font-weight: 600;
+        }
+        
+        .access-button {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+            color: white;
+            padding: 15px 30px;
+            border-radius: 25px;
+            text-decoration: none;
+            display: block;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            text-align: center;
+            font-size: 1.1em;
+        }
+        
+        .access-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 20px rgba(255, 107, 107, 0.4);
+        }
+        
+        .access-button.loading {
+            background: linear-gradient(135deg, #6b7280, #4b5563);
+            cursor: not-allowed;
+        }
+        
+        /* Mobile adjustments */
+        @media (max-width: 600px) {
+            .telegram-banner {
+                flex-direction: column;
+                padding: 12px 15px;
+                gap: 10px;
+            }
+            
+            .telegram-icon {
+                font-size: 1.2em;
+            }
+            
+            .telegram-text {
+                font-size: 1em;
+            }
+            
+            .telegram-button {
+                padding: 6px 15px;
+                font-size: 0.9em;
+            }
+            
+            .creator-grid {
+                gap: 15px;
+            }
+            
+            .creator-card {
+                padding: 15px;
+            }
+            
+            .creator-name {
+                font-size: 1.3em;
+            }
+            
+            .access-button {
+                padding: 12px 20px;
+                font-size: 1em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🌸 Mochi's Exclusive Content</h1>
+        </div>
+        
+        <!-- MINIMAL Telegram Banner -->
+        <div class="telegram-banner">
+            <span class="telegram-icon">📱</span>
+            <span class="telegram-text">Join for exclusive content</span>
+            <a href="https://t.me/+nHQrV__zFr42YTUx" class="telegram-button" target="_blank">
+                Join Telegram
+            </a>
+        </div>
+        
+        <div class="creator-grid" id="contentContainer">
+            <!-- Content will be loaded here -->
+        </div>
+    </div>
+
+    <script>
+        // EMBEDDED DATA - Newest creators FIRST! Now with backup images
+        const creatorsData = {
+            "leftColumn": [
+                {
+                    "name": "Kellie",
+                    "imageUrl": "https://thumbs2.imgbox.com/6c/6d/GfI02yek_t.jpg",
+                    "backupImages": [
+                        "https://via.placeholder.com/400x400/ff6b6b/ffffff?text=Backup+Image+1",
+                        "https://via.placeholder.com/400x400/4ecdc4/ffffff?text=Backup+Image+2"
+                    ],
+                    "contentUrl": "https://mega.nz/folder/igwzFbDB#c9iXt1z14gAQ6r0jSyzsQQ",
+                    "linkvertiseUrl": "https://link-target.net/1327817/Tk3RrWeZ7VWa",
+                    "description": ""
+                },
+                {
+                    "name": "Millie Cha",
+                    "imageUrl": "https://thumbs2.imgbox.com/3f/49/CzkU09eL_t.jpg",
+                    "backupImages": [
+                        "https://via.placeholder.com/400x400/ff6b6b/ffffff?text=Backup+Image+1",
+                        "https://via.placeholder.com/400x400/4ecdc4/ffffff?text=Backup+Image+2"
+                    ],
+                    "contentUrl": "https://mega.nz/folder/O0QU3K6a#lqNvPbUSyQxn47_UsjqeLQ",
+                    "linkvertiseUrl": "https://direct-link.net/1327817/GjpHxdH0jeSb",
+                    "description": ""
+                },
+                {
+                    "name": "mizukawasumire",
+                    "imageUrl": "https://thumbs2.imgbox.com/a9/d8/razIoR3q_t.jpg",
+                    "backupImages": [
+                        "https://via.placeholder.com/400x400/ff6b6b/ffffff?text=Backup+Image+1",
+                        "https://via.placeholder.com/400x400/4ecdc4/ffffff?text=Backup+Image+2"
+                    ],
+                    "contentUrl": "https://mega.nz/folder/CAgTQSyB#5vlS24DxLrVcRuiQRVMrHA",
+                    "linkvertiseUrl": "https://direct-link.net/1327817/anmbvUROdj8R",
+                    "description": ""
+                },
+                {
+                    "name": "AthenaNavy",
+                    "imageUrl": "https://thumbs2.imgbox.com/3b/de/lQ2XRTn1_t.jpg",
+                    "backupImages": [
+                        "https://via.placeholder.com/400x400/ff6b6b/ffffff?text=Backup+Image+1",
+                        "https://via.placeholder.com/400x400/4ecdc4/ffffff?text=Backup+Image+2"
+                    ],
+                    "contentUrl": "https://mega.nz/folder/p38iARQL#hFdVkN3kwUyeCJ4SEVhKQA",
+                    "linkvertiseUrl": "https://link-hub.net/1327817/G8jajrYYfP4t",
+                    "description": ""
+                },
+                {
+                    "name": "abgbunnyy",
+                    "imageUrl": "https://thumbs2.imgbox.com/60/12/yVvQRl2E_t.jpg",
+                    "backupImages": [
+                        "https://via.placeholder.com/400x400/ff6b6b/ffffff?text=Backup+Image+1",
+                        "https://via.placeholder.com/400x400/4ecdc4/ffffff?text=Backup+Image+2"
+                    ],
+                    "contentUrl": "https://mega.nz/folder/KtREnTwI#YGxRTYjBspe_K8_JR9mIhA",
+                    "linkvertiseUrl": "https://direct-link.net/1327817/kiRxR8cbSjP9",
+                    "description": ""
+                },
+                {
+                    "name": "bunnybrownie36",
+                    "imageUrl": "https://thumbs2.imgbox.com/4c/88/gNPLtnXV_t.jpg",
+                    "backupImages": [
+                        "https://via.placeholder.com/400x400/ff6b6b/ffffff?text=Backup+Image+1",
+                        "https://via.placeholder.com/400x400/4ecdc4/ffffff?text=Backup+Image+2"
+                    ],
+                    "contentUrl": "https://mega.nz/folder/h6FRGYoZ#6SLyjhecmS17yBGsouUGKg",
+                    "linkvertiseUrl": "https://link-hub.net/1327817/VqAhfbgQDBri",
+                    "description": ""
+                },
+                {
+                    "name": "Irisadamsone",
+                    "imageUrl": "https://thumbs2.imgbox.com/94/05/fMcdAEsn_t.jpeg",
+                    "backupImages": [
+                        "https://via.placeholder.com/400x400/ff6b6b/ffffff?text=Backup+Image+1",
+                        "https://via.placeholder.com/400x400/4ecdc4/ffffff?text=Backup+Image+2"
+                    ],
+                    "contentUrl": "https://mega.nz/folder/DdMyAawK#ZlxMfCehWrRQl2BfEpXDHQ",
+                    "linkvertiseUrl": "https://direct-link.net/1327817/yQHwfK0P0ySN",
+                    "description": ""
+                },
+                {
+                    "name": "Briddyli",
+                    "imageUrl": "https://thumbs2.imgbox.com/f5/d4/mKMlTufG_t.jpeg",
+                    "backupImages": [
+                        "https://via.placeholder.com/400x400/ff6b6b/ffffff?text=Backup+Image+1",
+                        "https://via.placeholder.com/400x400/4ecdc4/ffffff?text=Backup+Image+2"
+                    ],
+                    "contentUrl": "https://mega.nz/folder/eZF3jQqZ#xXaoqqAxpNbvGVclxAb94g/folder/DdswXQDY",
+                    "linkvertiseUrl": "https://link-center.net/1327817/pIN5bUPC6K8M",
+                    "description": ""
+                }
+            ],
+            "rightColumn": [
+                {
+                    "name": "Joymei",
+                    "imageUrl": "https://thumbs2.imgbox.com/43/68/EVCUV6IS_t.jpg",
+                    "backupImages": [
+                        "https://via.placeholder.com/400x400/ff6b6b/ffffff?text=Backup+Image+1",
+                        "https://via.placeholder.com/400x400/4ecdc4/ffffff?text=Backup+Image+2"
+                    ],
+                    "contentUrl": "https://mega.nz/folder/CLoDwbAC#leALogaxjmjCmz_ZS_M3PQ",
+                    "linkvertiseUrl": "https://link-hub.net/1327817/NVFKJ9C6JjP7",
+                    "description": ""
+                },
+                {
+                    "name": "lwlrd444",
+                    "imageUrl": "https://thumbs2.imgbox.com/3e/45/D78e6pfW_t.jpg",
+                    "backupImages": [
+                        "https://via.placeholder.com/400x400/ff6b6b/ffffff?text=Backup+Image+1",
+                        "https://via.placeholder.com/400x400/4ecdc4/ffffff?text=Backup+Image+2"
+                    ],
+                    "contentUrl": "https://mega.nz/folder/WIozRDAZ#P4fQEap6eIgrhksSmvXzCg",
+                    "linkvertiseUrl": "https://link-hub.net/1327817/PkCbd4rHc2VP",
+                    "description": ""
+                },
+                {
+                    "name": "Phoeyuibe",
+                    "imageUrl": "https://thumbs2.imgbox.com/0d/1a/0A0yWkXB_t.jpeg",
+                    "backupImages": [
+                        "https://via.placeholder.com/400x400/ff6b6b/ffffff?text=Backup+Image+1",
+                        "https://via.placeholder.com/400x400/4ecdc4/ffffff?text=Backup+Image+2"
+                    ],
+                    "contentUrl": "https://mega.nz/folder/WJsUUDjD#Bh9OQdo3XbEd98qMyKdezA",
+                    "linkvertiseUrl": "https://link-center.net/1327817/SoB6tH56evgl",
+                    "description": ""
+                },
+                {
+                    "name": "Astrid",
+                    "imageUrl": "https://thumbs2.imgbox.com/a3/5f/wMnKUEa6_t.jpeg",
+                    "backupImages": [
+                        "https://via.placeholder.com/400x400/ff6b6b/ffffff?text=Backup+Image+1",
+                        "https://via.placeholder.com/400x400/4ecdc4/ffffff?text=Backup+Image+2"
+                    ],
+                    "contentUrl": "https://mega.nz/folder/hFR1BThS#KyX3NM9GM7lNzPbdN4F1RA",
+                    "linkvertiseUrl": "https://link-center.net/1327817/zPzywV7ixjhq",
+                    "description": ""
+                },
+                {
+                    "name": "Peachytara",
+                    "imageUrl": "https://thumbs2.imgbox.com/3c/c9/SUMvIyhH_t.jpg",
+                    "backupImages": [
+                        "https://via.placeholder.com/400x400/ff6b6b/ffffff?text=Backup+Image+1",
+                        "https://via.placeholder.com/400x400/4ecdc4/ffffff?text=Backup+Image+2"
+                    ],
+                    "contentUrl": "https://mega.nz/folder/r2ZR1QjS#psXJcMXv0YDYFggYlRebVg/folder/PyInmLpZ",
+                    "linkvertiseUrl": "https://link-target.net/1327817/43a3KXsYopik",
+                    "description": ""
+                },
+                {
+                    "name": "Viviannn_cc",
+                    "imageUrl": "https://thumbs2.imgbox.com/0a/b0/AUJwP8a1_t.jpg",
+                    "backupImages": [
+                        "https://via.placeholder.com/400x400/ff6b6b/ffffff?text=Backup+Image+1",
+                        "https://via.placeholder.com/400x400/4ecdc4/ffffff?text=Backup+Image+2"
+                    ],
+                    "contentUrl": "https://mega.nz/folder/6N5TSQ7A#Je0leqnSiVrEf6McawLZNA",
+                    "linkvertiseUrl": "https://link-center.net/1327817/x5EBXvBjFIMa",
+                    "description": ""
+                },
+                {
+                    "name": "Yemada",
+                    "imageUrl": "https://thumbs2.imgbox.com/c6/61/uexKDKig_t.jpg",
+                    "backupImages": [
+                        "https://via.placeholder.com/400x400/ff6b6b/ffffff?text=Backup+Image+1",
+                        "https://via.placeholder.com/400x400/4ecdc4/ffffff?text=Backup+Image+2"
+                    ],
+                    "contentUrl": "https://mega.nz/folder/KlolXY7I#U1SKrFAZYy8cEmWQBg4pHA/folder/qg5wGawC",
+                    "linkvertiseUrl": "https://link-center.net/1327817/QN3gf6e0w8Zb",
+                    "description": ""
+                },
+                {
+                    "name": "SpicyLittleBunny",
+                    "imageUrl": "https://thumbs2.imgbox.com/2c/23/BEZKDNNK_t.jpg",
+                    "backupImages": [
+                        "https://via.placeholder.com/400x400/ff6b6b/ffffff?text=Backup+Image+1",
+                        "https://via.placeholder.com/400x400/4ecdc4/ffffff?text=Backup+Image+2"
+                    ],
+                    "contentUrl": "https://mega.nz/folder/iLwRQYaK#oBOskMnjuiTz83q_915csw",
+                    "linkvertiseUrl": "https://link-center.net/1327817/uGZnRbQFhoka",
+                    "description": ""
+                }
+            ]
+        };
+        
+        // Display creators on the page
+        function displayCreators() {
+            const container = document.getElementById('contentContainer');
+            container.innerHTML = '';
+            
+            // Combine both columns into one array (newest first!)
+            const allCreators = [
+                ...creatorsData.leftColumn,
+                ...creatorsData.rightColumn
+            ];
+            
+            console.log('🎨 Displaying', allCreators.length, 'creators');
+            
+            // Add all creators to the grid
+            allCreators.forEach(creator => {
+                container.innerHTML += createCreatorCard(creator);
+            });
+            
+            // Setup image backup system for all images
+            setupImageBackups();
+        }
+        
+        // Create HTML for a creator card (with clickable image and backup system)
+        function createCreatorCard(creator) {
+            return `
+                <div class="creator-card">
+                    <div class="image-container" onclick="handleAccess('${creator.contentUrl}', '${creator.name}', '${creator.linkvertiseUrl}', event)">
+                        <img src="${creator.imageUrl}" alt="${creator.name}" class="creator-image" 
+                             data-backup-1="${creator.backupImages[0] || ''}"
+                             data-backup-2="${creator.backupImages[1] || ''}"
+                             data-backup-3="${creator.backupImages[2] || ''}"
+                             data-creator="${creator.name}"
+                             data-current-backup="0"
+                             onerror="handleImageError(this)">
+                        <div class="image-status" id="status-${creator.name.replace(/\s+/g, '-')}">✓</div>
+                    </div>
+                    <h3 class="creator-name">${creator.name}</h3>
+                    <a href="${creator.linkvertiseUrl}" class="access-button" target="_blank" onclick="handleAccess('${creator.contentUrl}', '${creator.name}', '${creator.linkvertiseUrl}', event)">🔒 Access Content</a>
+                </div>
+            `;
+        }
+        
+        // Setup backup image system
+        function setupImageBackups() {
+            const images = document.querySelectorAll('.creator-image');
+            images.forEach(img => {
+                img.dataset.currentBackup = '0';
+                img.dataset.triedBackup = 'false';
+            });
+        }
+        
+        // Handle image errors with automatic backup system
+        function handleImageError(img) {
+            // Only try backup if we haven't already
+            if (img.dataset.triedBackup === 'true') {
+                // Use final fallback
+                const creatorName = img.dataset.creator;
+                const statusElement = document.getElementById(`status-${creatorName.replace(/\s+/g, '-')}`);
+                if (statusElement) {
+                    statusElement.textContent = '⚠️';
+                    statusElement.className = 'image-status fallback';
+                }
+                img.src = `https://via.placeholder.com/400x400/1e1e2e/9ca3af?text=${encodeURIComponent(creatorName)}`;
+                return;
+            }
+            
+            const currentBackup = parseInt(img.dataset.currentBackup);
+            const backup1 = img.dataset.backup1;
+            const backup2 = img.dataset.backup2;
+            const backup3 = img.dataset.backup3;
+            const creatorName = img.dataset.creator;
+            const statusElement = document.getElementById(`status-${creatorName.replace(/\s+/g, '-')}`);
+            
+            console.log(`🖼️ Primary image failed for ${creatorName}, trying backup...`);
+            
+            // Try first backup
+            if (currentBackup === 0 && backup1) {
+                img.src = backup1;
+                img.dataset.currentBackup = '1';
+                if (statusElement) {
+                    statusElement.textContent = '🔄';
+                    statusElement.className = 'image-status backup';
+                }
+            }
+            // Try second backup
+            else if (currentBackup === 1 && backup2) {
+                img.src = backup2;
+                img.dataset.currentBackup = '2';
+                if (statusElement) {
+                    statusElement.textContent = '🔄';
+                    statusElement.className = 'image-status backup';
+                }
+            }
+            // Try third backup
+            else if (currentBackup === 2 && backup3) {
+                img.src = backup3;
+                img.dataset.currentBackup = '3';
+                if (statusElement) {
+                    statusElement.textContent = '🔄';
+                    statusElement.className = 'image-status backup';
+                }
+            }
+            // No more backups, use placeholder
+            else {
+                img.dataset.triedBackup = 'true';
+                if (statusElement) {
+                    statusElement.textContent = '⚠️';
+                    statusElement.className = 'image-status fallback';
+                }
+                img.src = `https://via.placeholder.com/400x400/1e1e2e/9ca3af?text=${encodeURIComponent(creatorName)}`;
+                console.log(`❌ All images failed for ${creatorName}, using placeholder`);
+            }
+        }
+        
+        // Handle access button clicks (WORKS FOR BOTH IMAGE AND BUTTON!)
+        function handleAccess(contentUrl, creatorName, linkvertiseUrl, event) {
+            if (event) {
+                event.preventDefault();
+            }
+            
+            console.log(`🔗 Accessing ${creatorName}'s content via Linkvertise...`);
+            
+            // Show loading state for button if clicked
+            if (event && event.target.classList.contains('access-button')) {
+                const button = event.target;
+                const originalText = button.textContent;
+                button.textContent = '🔄 Loading...';
+                button.classList.add('loading');
+                
+                setTimeout(() => {
+                    button.textContent = originalText;
+                    button.classList.remove('loading');
+                }, 2000);
+            }
+            
+            // ALWAYS go through Linkvertise (same for image and button clicks!)
+            setTimeout(() => {
+                window.open(linkvertiseUrl, '_blank');
+            }, 500);
+        }
+        
+        // Load creators when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🚀 Mochi Website Starting with Clickable Images & Backup System...');
+            console.log('📊 Total creators:', creatorsData.leftColumn.length + creatorsData.rightColumn.length);
+            displayCreators();
+        });
+    </script>
+    
+    <!-- Linkvertise SDK -->
+    <script src="https://publisher.linkvertise.com/cdn/linkvertise.js"></script>
+    <script>
+        // Initialize Linkvertise with your User ID
+        linkvertise(1327817, {
+            whitelist: ["localhost", "127.0.0.1"],
+            blacklist: []
+        });
+    </script>
+</body>
+</html>
