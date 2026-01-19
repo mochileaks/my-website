@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Confirm Access - Mochi's Exclusive Content</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Cloudflare Turnstile -->
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+            color: #ffffff;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .access-container {
+            background: #242424;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 500px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            border: 1px solid #333;
+        }
+
+        .back-link {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            color: #8a96a3;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.95em;
+            transition: color 0.3s ease;
+        }
+
+        .back-link:hover {
+            color: #00aff0;
+        }
+
+        .creator-preview {
+            margin-bottom: 30px;
+        }
+
+        .creator-image {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid #00aff0;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0, 175, 240, 0.3);
+        }
+
+        .creator-name {
+            font-size: 1.8em;
+            font-weight: 700;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #ff6b6b, #4ecdc4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .access-message {
+            color: #8a96a3;
+            font-size: 1.1em;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+        .free-clicks-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: linear-gradient(135deg, #00aff0, #018cf1);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-weight: 600;
+            margin-bottom: 25px;
+        }
+
+        .free-clicks-badge.depleted {
+            background: linear-gradient(135deg, #ff6b6b, #ff4757);
+        }
+
+        .turnstile-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 25px;
+            min-height: 65px;
+        }
+
+        .confirm-button {
+            background: linear-gradient(135deg, #00aff0, #018cf1);
+            color: white;
+            border: none;
+            padding: 18px 50px;
+            border-radius: 30px;
+            font-size: 1.2em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            max-width: 300px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin: 0 auto;
+        }
+
+        .confirm-button:hover:not(:disabled) {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(0, 175, 240, 0.4);
+        }
+
+        .confirm-button:disabled {
+            background: #444;
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+
+        .confirm-button.loading {
+            pointer-events: none;
+        }
+
+        .confirm-button .spinner {
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            display: none;
+        }
+
+        .confirm-button.loading .spinner {
+            display: block;
+        }
+
+        .confirm-button.loading .button-text {
+            display: none;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .status-message {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 10px;
+            display: none;
+        }
+
+        .status-message.error {
+            display: block;
+            background: rgba(255, 107, 107, 0.2);
+            border: 1px solid #ff6b6b;
+            color: #ff6b6b;
+        }
+
+        .status-message.success {
+            display: block;
+            background: rgba(78, 205, 196, 0.2);
+            border: 1px solid #4ecdc4;
+            color: #4ecdc4;
+        }
+
+        .ad-notice {
+            background: rgba(255, 193, 7, 0.1);
+            border: 1px solid rgba(255, 193, 7, 0.3);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 25px;
+            color: #ffc107;
+            font-size: 0.95em;
+        }
+
+        .ad-notice.hidden {
+            display: none;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 500px) {
+            .access-container {
+                padding: 30px 20px;
+            }
+
+            .creator-image {
+                width: 120px;
+                height: 120px;
+            }
+
+            .creator-name {
+                font-size: 1.5em;
+            }
+
+            .confirm-button {
+                padding: 16px 40px;
+                font-size: 1.1em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <a href="index.html" class="back-link">← Back to Gallery</a>
+
+    <div class="access-container">
+        <div class="creator-preview">
+            <img src="" alt="Creator" class="creator-image" id="creatorImage">
+            <h1 class="creator-name" id="creatorName">Loading...</h1>
+        </div>
+
+        <p class="access-message">
+            You are about to access exclusive content.<br>
+            Please verify you're human to continue.
+        </p>
+
+        <div class="free-clicks-badge" id="clicksBadge">
+            <span id="badgeIcon">🎁</span>
+            <span id="badgeText">2 Free Clicks Remaining</span>
+        </div>
+
+        <div class="ad-notice hidden" id="adNotice">
+            ⚠️ You've used all free clicks. You will be redirected through our sponsor to access this content.
+        </div>
+
+        <!-- Cloudflare Turnstile Widget -->
+        <!-- REPLACE 'YOUR_SITE_KEY' with your actual Cloudflare Turnstile site key -->
+        <div class="turnstile-container">
+            <div class="cf-turnstile" 
+                 data-sitekey="0x4AAAAAACLM2j6VILW1ogtP" 
+                 data-callback="onTurnstileSuccess"
+                 data-theme="dark">
+            </div>
+        </div>
+
+        <button class="confirm-button" id="confirmButton" disabled>
+            <span class="spinner"></span>
+            <span class="button-text">🔓 Confirm Access</span>
+        </button>
+
+        <div class="status-message" id="statusMessage"></div>
+    </div>
+
+    <!-- Linkvertise SDK -->
+    <script src="https://publisher.linkvertise.com/cdn/linkvertise.js"></script>
+
+    <script>
+        // =====================================================================
+        // CONFIGURATION
+        // =====================================================================
+        const CONFIG = {
+            NAMESPACE: 'mochis-exclusive',
+            FREE_CLICKS_KEY: 'mochi_free_clicks',
+            COOLDOWN_HOURS: 1,
+            MAX_FREE_CLICKS: 2,
+            LINKVERTISE_ID: 1327817  // Your Linkvertise ID
+        };
+
+        let turnstileVerified = false;
+        let creatorData = null;
+
+        // =====================================================================
+        // FREE CLICKS SYSTEM (Shared with index.html)
+        // =====================================================================
+        function getFreeClicksData() {
+            const stored = localStorage.getItem(CONFIG.FREE_CLICKS_KEY);
+            if (!stored) {
+                return { clickCount: 0, windowStart: null };
+            }
+            try {
+                return JSON.parse(stored);
+            } catch (e) {
+                return { clickCount: 0, windowStart: null };
+            }
+        }
+
+        function saveFreeClicksData(data) {
+            localStorage.setItem(CONFIG.FREE_CLICKS_KEY, JSON.stringify(data));
+        }
+
+        function checkAndResetCooldown() {
+            const data = getFreeClicksData();
+            
+            if (data.windowStart) {
+                const now = Date.now();
+                const hoursPassed = (now - data.windowStart) / (1000 * 60 * 60);
+                
+                if (hoursPassed >= CONFIG.COOLDOWN_HOURS) {
+                    const newData = { clickCount: 0, windowStart: null };
+                    saveFreeClicksData(newData);
+                    return newData;
+                }
+            }
+            return data;
+        }
+
+        function getRemainingFreeClicks() {
+            const data = checkAndResetCooldown();
+            return Math.max(0, CONFIG.MAX_FREE_CLICKS - data.clickCount);
+        }
+
+        function useFreeClick() {
+            let data = checkAndResetCooldown();
+            
+            if (data.windowStart === null) {
+                data.windowStart = Date.now();
+            }
+            
+            data.clickCount++;
+            saveFreeClicksData(data);
+            
+            return data.clickCount <= CONFIG.MAX_FREE_CLICKS;
+        }
+
+        function hasFreeClicks() {
+            const data = checkAndResetCooldown();
+            return data.clickCount < CONFIG.MAX_FREE_CLICKS;
+        }
+
+        // =====================================================================
+        // GLOBAL VIEWS INCREMENT
+        // =====================================================================
+        function getCreatorKey(creatorName) {
+            return creatorName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+        }
+
+        async function incrementGlobalViews(creatorName) {
+            const key = getCreatorKey(creatorName);
+            
+            try {
+                await fetch(`https://api.countapi.xyz/hit/${CONFIG.NAMESPACE}/${key}`);
+            } catch (error) {
+                console.error('CountAPI increment error:', error);
+            }
+        }
+
+        // =====================================================================
+        // TURNSTILE CALLBACK
+        // =====================================================================
+        function onTurnstileSuccess(token) {
+            console.log('✅ Turnstile verified');
+            turnstileVerified = true;
+            document.getElementById('confirmButton').disabled = false;
+        }
+
+        // =====================================================================
+        // UPDATE UI BASED ON FREE CLICKS
+        // =====================================================================
+        function updateClicksBadge() {
+            const remaining = getRemainingFreeClicks();
+            const badge = document.getElementById('clicksBadge');
+            const badgeIcon = document.getElementById('badgeIcon');
+            const badgeText = document.getElementById('badgeText');
+            const adNotice = document.getElementById('adNotice');
+
+            if (remaining > 0) {
+                badge.classList.remove('depleted');
+                badgeIcon.textContent = '🎁';
+                badgeText.textContent = `${remaining} Free Click${remaining !== 1 ? 's' : ''} Remaining`;
+                adNotice.classList.add('hidden');
+            } else {
+                badge.classList.add('depleted');
+                badgeIcon.textContent = '🔒';
+                badgeText.textContent = 'Free Clicks Depleted';
+                adNotice.classList.remove('hidden');
+            }
+        }
+
+        // =====================================================================
+        // CONFIRM BUTTON HANDLER
+        // =====================================================================
+        async function handleConfirm() {
+            if (!turnstileVerified) {
+                showStatus('Please complete the verification first.', 'error');
+                return;
+            }
+
+            if (!creatorData) {
+                showStatus('Error loading creator data. Please go back and try again.', 'error');
+                return;
+            }
+
+            const button = document.getElementById('confirmButton');
+            button.classList.add('loading');
+
+            // Increment global views
+            await incrementGlobalViews(creatorData.name);
+
+            const freeClickUsed = hasFreeClicks();
+
+            if (freeClickUsed) {
+                // Use a free click and go directly to content
+                useFreeClick();
+                showStatus('Access granted! Redirecting...', 'success');
+                
+                setTimeout(() => {
+                    window.open(creatorData.contentUrl, '_blank');
+                    // Redirect back to home after opening
+                    setTimeout(() => {
+                        window.location.href = 'index.html';
+                    }, 500);
+                }, 1000);
+            }  else {
+                    // No free clicks - use Linkvertise
+                    showStatus('Redirecting through sponsor...', 'success');
+                    
+                    setTimeout(() => {
+                        // If there's a specific Linkvertise URL, use it
+                        if (creatorData.linkvertiseUrl && creatorData.linkvertiseUrl !== '') {
+                            window.open(creatorData.linkvertiseUrl, '_blank');
+                        } else {
+                            // Otherwise, use the Linkvertise SDK to monetize the content URL
+                            if (typeof linkvertise === 'function') {
+                                // Create a dynamic link
+                                const dynamicLink = `https://link-to.net/${CONFIG.LINKVERTISE_ID}/${Math.random().toString(36).substring(7)}/dynamic?r=${encodeURIComponent(creatorData.contentUrl)}`;
+                                window.open(dynamicLink, '_blank');
+                            } else {
+                                // Fallback to direct link if Linkvertise fails
+                                window.open(creatorData.contentUrl, '_blank');
+                            }
+                        }
+                        // Redirect back to home after opening
+                        setTimeout(() => {
+                            window.location.href = 'index.html';
+                        }, 500);
+                    }, 1500);
+                }
+        }
+
+        function showStatus(message, type) {
+            const statusEl = document.getElementById('statusMessage');
+            statusEl.textContent = message;
+            statusEl.className = `status-message ${type}`;
+        }
+
+        // =====================================================================
+        // INITIALIZATION
+        // =====================================================================
+        document.addEventListener('DOMContentLoaded', function() {
+            // PROTECTION: Check if user has free clicks
+            if (!hasFreeClicks()) {
+                console.log('🚫 No free clicks - redirecting back to home');
+                window.location.href = 'index.html';
+                return;
+            }
+            
+            // Get creator data from sessionStorage
+            const storedData = sessionStorage.getItem('pendingCreator');
+            
+            if (!storedData) {
+                // No creator data - redirect back
+                window.location.href = 'index.html';
+                return;
+            }
+
+            creatorData = JSON.parse(storedData);
+
+            // Update UI with creator info
+            document.getElementById('creatorImage').src = creatorData.imageUrl;
+            document.getElementById('creatorImage').alt = creatorData.name;
+            document.getElementById('creatorName').textContent = creatorData.name;
+
+            // Update free clicks badge
+            updateClicksBadge();
+
+            // Setup confirm button
+            document.getElementById('confirmButton').addEventListener('click', handleConfirm);
+
+            // Handle image error
+            document.getElementById('creatorImage').onerror = function() {
+                this.src = `https://via.placeholder.com/150x150/1a1a1a/00aff0?text=${encodeURIComponent(creatorData.name.charAt(0))}`;
+            };
+        });
+    </script>
+</body>
+</html>
